@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeHeart AI — Family Wellbeing</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFF8F3;--surface:#FFFFFF;--surface2:#FFF3EC;
+  --coral:#E07A5F;--coral-light:#F9E8E2;--coral-dark:#B85C43;
+  --sage:#81B29A;--sage-light:#E5F0EC;
+  --amber:#F2CC8F;--amber-light:#FDF5E4;
+  --text:#3D2E28;--text2:#9B8B85;
+  --border:#EDE0D9;--sidebar:#FFFAF7;
+  --radius:14px;--radius-sm:8px;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+
+/* ── LOGO IMAGE ── */
+.logo-img{width:36px;height:36px;object-fit:contain;border-radius:6px;}
+/* ── MADE BY CREDIT ── */
+.made-by{margin-top:.6rem;font-size:.74rem;color:var(--text2);line-height:1.6;}
+.made-by strong{color:var(--coral);font-weight:800;}
+
+/* ── APP SHELL ── */
+#app{display:block;min-height:100vh;}
+#sidebar{position:fixed;top:0;left:0;bottom:0;width:230px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.5rem 1rem;z-index:100;}
+.logo{display:flex;align-items:baseline;gap:6px;padding:0 0.4rem;margin-bottom:2rem;}
+.logo-icon{font-size:1.5rem;}
+.logo-text{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--text);}
+.logo-badge{font-size:0.65rem;font-weight:800;color:var(--coral);background:var(--coral-light);padding:2px 6px;border-radius:5px;letter-spacing:.06em;}
+.nav-list{list-style:none;flex:1;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:0.72rem 0.9rem;border-radius:var(--radius-sm);cursor:pointer;font-size:0.93rem;font-weight:700;color:var(--text2);margin-bottom:3px;transition:all .15s;user-select:none;}
+.nav-item:hover{background:var(--coral-light);color:var(--coral);}
+.nav-item.active{background:var(--coral);color:#fff;}
+.nav-icon{font-size:1.05rem;}
+.sidebar-footer{border-top:1px solid var(--border);padding-top:0.9rem;font-size:0.78rem;color:var(--text2);line-height:1.6;}
+.sidebar-footer button{background:none;border:none;color:var(--coral);cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;padding:0;}
+.sidebar-footer button:hover{text-decoration:underline;}
+#main{margin-left:230px;padding:2.5rem;max-width:880px;}
+
+/* ── PAGES ── */
+.page{display:none;}
+.page.active{display:block;animation:fadeUp .22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:1.8rem;}
+.page-header h1{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--text);margin-bottom:.25rem;}
+.page-header p{color:var(--text2);font-size:0.93rem;line-height:1.5;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);margin-bottom:1rem;}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:2rem;}
+.tool-card{background:var(--surface);border-radius:var(--radius);padding:1.6rem 1.4rem;border:1px solid var(--border);cursor:pointer;transition:all .2s;overflow:hidden;position:relative;}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.tool-card.mood::before{background:linear-gradient(90deg,var(--amber),#f4a261);}
+.tool-card.conflict::before{background:linear-gradient(90deg,var(--coral),#e07a5f);}
+.tool-card.elder::before{background:linear-gradient(90deg,var(--sage),#52b788);}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(224,122,95,0.13);border-color:rgba(224,122,95,0.25);}
+.tool-icon{font-size:2rem;margin-bottom:.7rem;}
+.tool-card h3{font-size:1.02rem;font-weight:800;margin-bottom:.35rem;}
+.tool-card p{font-size:0.84rem;color:var(--text2);line-height:1.5;}
+.tool-tag{display:inline-block;font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:.7rem;}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:center;}
+.stat-num{font-size:2rem;font-weight:800;color:var(--coral);}
+.stat-label{font-size:0.77rem;color:var(--text2);font-weight:600;margin-top:.1rem;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:.68rem 1.35rem;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--coral);color:#fff;}
+.btn-primary:hover{background:var(--coral-dark);}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--coral-light);border-color:var(--coral-light);}
+.btn-sage{background:var(--sage);color:#fff;}
+.btn-sage:hover{filter:brightness(.92);}
+.btn-sage:disabled{opacity:.6;cursor:not-allowed;}
+.btn-full{width:100%;justify-content:center;}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:.9rem;}
+label{display:block;font-weight:700;font-size:.88rem;margin-bottom:.35rem;color:var(--text);}
+input[type=text],input[type=password],textarea,select{width:100%;padding:.68rem .9rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:.93rem;background:var(--surface);color:var(--text);transition:border-color .15s;}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--coral);}
+textarea{resize:vertical;min-height:95px;line-height:1.55;}
+
+/* ── MOOD EMOJI SCALE ── */
+.mood-scale{display:flex;gap:.6rem;margin:.4rem 0;}
+.mood-btn{flex:1;padding:.55rem .2rem;border:2px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;text-align:center;font-size:1.35rem;transition:all .15s;line-height:1;}
+.mood-btn:hover{border-color:var(--amber);background:var(--amber-light);}
+.mood-btn.selected{border-color:var(--coral);background:var(--coral-light);}
+.mood-label{display:block;font-size:.62rem;font-weight:700;color:var(--text2);margin-top:3px;font-family:'Nunito',sans-serif;}
+
+/* ── AI RESPONSE BOX ── */
+.ai-box{background:var(--sage-light);border-radius:var(--radius-sm);padding:1.1rem 1.2rem;margin-top:.9rem;border-left:3px solid var(--sage);line-height:1.65;font-size:.93rem;display:none;}
+.ai-box.show{display:block;animation:fadeUp .2s ease;}
+.ai-box-header{display:flex;align-items:center;gap:7px;font-weight:700;font-size:.82rem;color:var(--sage);margin-bottom:.45rem;}
+
+/* ── MOOD BOARD ── */
+.mood-board{display:flex;flex-wrap:wrap;gap:.65rem;}
+.mood-chip{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;display:flex;align-items:center;gap:7px;font-size:.88rem;font-weight:600;}
+.empty-state{text-align:center;padding:2rem;color:var(--text2);font-size:.88rem;}
+.empty-icon{font-size:2.2rem;margin-bottom:.4rem;}
+
+/* ── CONFLICT STEPS BAR ── */
+.steps-bar{display:flex;gap:.5rem;margin-bottom:1.4rem;}
+.step-dot{flex:1;height:5px;border-radius:3px;background:var(--border);transition:background .3s;}
+.step-dot.done{background:var(--coral);}
+.step-dot.active{background:var(--amber);}
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeUp .2s ease;}
+.result-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-top:.8rem;}
+.result-box h3{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--coral);margin-bottom:.9rem;}
+.result-text{line-height:1.75;font-size:.93rem;white-space:pre-wrap;}
+
+/* ── CHAT ── */
+.chat-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.chat-header{background:var(--sage-light);padding:.9rem 1.1rem;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.chat-header .status{font-size:.78rem;color:var(--sage);font-weight:600;}
+.chat-messages{height:400px;overflow-y:auto;padding:1.1rem;background:var(--surface2);}
+.chat-msg{display:flex;gap:9px;margin-bottom:.9rem;}
+.chat-msg.user{flex-direction:row-reverse;}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.chat-msg.ai .avatar{background:var(--sage-light);}
+.chat-msg.user .avatar{background:var(--coral-light);}
+.bubble{max-width:74%;padding:.65rem .95rem;border-radius:14px;font-size:.91rem;line-height:1.55;}
+.chat-msg.user .bubble{background:var(--coral);color:#fff;border-radius:14px 14px 3px 14px;}
+.chat-msg.ai .bubble{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 14px 3px;}
+.chat-footer{padding:.9rem 1rem;border-top:1px solid var(--border);display:flex;gap:.7rem;background:var(--surface);}
+.chat-input{flex:1;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:22px;font-family:'Nunito',sans-serif;font-size:.92rem;background:var(--bg);color:var(--text);}
+.chat-input:focus{outline:none;border-color:var(--sage);}
+
+/* ── UTILS ── */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tip{background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:.84rem;color:var(--text);margin-bottom:1rem;line-height:1.55;}
+.privacy-pill{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;color:#085041;background:var(--sage-light);padding:3px 9px;border-radius:20px;margin-bottom:.9rem;}
+.section-label{font-weight:800;font-size:.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.7rem;}
+.row{display:flex;gap:.75rem;}
+
+/* ── MOBILE NAV ── */
+#bot-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;}
+.bot-nav-inner{display:flex;justify-content:space-around;padding:.4rem 0;}
+.bot-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.4rem .7rem;border:none;background:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.68rem;font-weight:700;color:var(--text2);border-radius:8px;transition:all .15s;}
+.bot-btn.active{color:var(--coral);}
+.bot-icon{font-size:1.15rem;}
+
+@media(max-width:768px){
+  #sidebar{display:none;}
+  #main{margin-left:0;padding:1.1rem;padding-bottom:76px;}
+  #bot-nav{display:block;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .page-header h1{font-size:1.55rem;}
+  .mood-scale{gap:.4rem;}
+  .row{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="logo">
+      <img src="homeheart-logo.jpeg" alt="HomeHeart AI" class="logo-img" />
+      <span class="logo-text">HomeHeart</span>
+      <span class="logo-badge">AI</span>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" id="nav-home" onclick="go('home')"><span class="nav-icon">🏡</span>Home</li>
+      <li class="nav-item" id="nav-mood" onclick="go('mood')"><span class="nav-icon">💛</span>Family Mood</li>
+      <li class="nav-item" id="nav-conflict" onclick="go('conflict')"><span class="nav-icon">🕊️</span>Peace Maker</li>
+      <li class="nav-item" id="nav-elder" onclick="go('elder')"><span class="nav-icon">💬</span>Elder Companion</li>
+    </ul>
+    <div class="sidebar-footer">
+      <div class="made-by">✨ Made with care by<br><strong>Laith AWS &amp; Ghassan Khatib</strong></div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main id="main">
+
+    <!-- HOME -->
+    <div id="page-home" class="page active">
+      <div class="page-header">
+        <h1>Welcome to HomeHeart AI 🏠</h1>
+        <p>Three AI-powered tools to help your family connect, communicate, and care for each other.</p>
+      </div>
+      <div class="card-grid">
+        <div class="tool-card mood" onclick="go('mood')">
+          <div class="tool-icon">💛</div>
+          <h3>Family Mood Board</h3>
+          <p>Each family member checks in daily. AI listens privately — the family just sees the mood emoji.</p>
+          <span class="tool-tag" style="background:var(--amber-light);color:#7a5200">🔒 Private & safe</span>
+        </div>
+        <div class="tool-card conflict" onclick="go('conflict')">
+          <div class="tool-icon">🕊️</div>
+          <h3>Family Peace Maker</h3>
+          <p>Having a disagreement? Both sides share their view. AI finds fair common ground — no taking sides.</p>
+          <span class="tool-tag" style="background:var(--coral-light);color:var(--coral-dark)">⚖️ Fair & neutral</span>
+        </div>
+        <div class="tool-card elder" onclick="go('elder')">
+          <div class="tool-icon">💬</div>
+          <h3>Elder Companion</h3>
+          <p>A warm, patient AI friend for grandparents. Reduces loneliness and keeps the whole family connected.</p>
+          <span class="tool-tag" style="background:var(--sage-light);color:#085041">💙 Always available</span>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="s-mood">0</div><div class="stat-label">Mood check-ins today</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-conflict">0</div><div class="stat-label">Conflicts resolved</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-elder">0</div><div class="stat-label">Elder chats sent</div></div>
+      </div>
+      <div class="tip">💡 <strong>Tip for families:</strong> Share this page link with everyone at home so they can all check in and use every tool together.</div>
+      <div style="text-align:center;margin-top:1.5rem;padding:.9rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">
+        <span style="font-size:.8rem;color:var(--text2);">✨ HomeHeart AI was crafted with love by</span><br>
+        <span style="font-weight:800;color:var(--coral);font-size:.95rem;">Laith AWS &amp; Ghassan Khatib</span>
+      </div>
+    </div>
+
+    <!-- MOOD -->
+    <div id="page-mood" class="page">
+      <div class="page-header">
+        <h1>Family Mood Board 💛</h1>
+        <p>How is everyone feeling today? Check in — your private thoughts stay between you and the AI.</p>
+      </div>
+      <div class="privacy-pill">🔒 Your private thoughts are never shown to other family members</div>
+      <div class="card">
+        <div class="form-group">
+          <label>How are you feeling right now?</label>
+          <div class="mood-scale">
+            <button class="mood-btn" data-score="1" data-emoji="😢" onclick="pickMood(this)">😢<span class="mood-label">Struggling</span></button>
+            <button class="mood-btn" data-score="2" data-emoji="😟" onclick="pickMood(this)">😟<span class="mood-label">Not great</span></button>
+            <button class="mood-btn" data-score="3" data-emoji="😐" onclick="pickMood(this)">😐<span class="mood-label">Okay</span></button>
+            <button class="mood-btn" data-score="4" data-emoji="😊" onclick="pickMood(this)">😊<span class="mood-label">Good</span></button>
+            <button class="mood-btn" data-score="5" data-emoji="😄" onclick="pickMood(this)">😄<span class="mood-label">Amazing</span></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Your name</label>
+          <input type="text" id="mood-name" placeholder="e.g. Sara, Dad, Yousuf..." />
+        </div>
+        <div class="form-group">
+          <label>What's on your mind? <span style="font-weight:400;color:var(--text2)">(optional — totally private)</span></label>
+          <textarea id="mood-thoughts" placeholder="Share anything you'd like... This is just between you and the AI."></textarea>
+        </div>
+        <button class="btn btn-primary" id="mood-btn" onclick="submitMood()">Check In</button>
+        <div class="ai-box" id="mood-ai">
+          <div class="ai-box-header">🤖 HomeHeart AI — just for you:</div>
+          <div id="mood-ai-text"></div>
+        </div>
+      </div>
+      <div class="section-label" style="margin-top:1.5rem">Today's family mood</div>
+      <div id="mood-board" class="mood-board">
+        <div class="empty-state"><div class="empty-icon">🌅</div><p>No check-ins yet. Be the first!</p></div>
+      </div>
+    </div>
+
+    <!-- CONFLICT -->
+    <div id="page-conflict" class="page">
+      <div class="page-header">
+        <h1>Family Peace Maker 🕊️</h1>
+        <p>Having a disagreement? Both sides share their perspective — AI finds a fair, calm resolution for everyone.</p>
+      </div>
+      <div class="steps-bar">
+        <div class="step-dot active" id="sd1"></div>
+        <div class="step-dot" id="sd2"></div>
+        <div class="step-dot" id="sd3"></div>
+      </div>
+      <div class="step-panel active" id="cp1">
+        <div class="card">
+          <h3 style="margin-bottom:1rem;font-size:1.05rem;font-weight:800">👤 Person A — share your side</h3>
+          <div class="form-group">
+            <label>Your name</label>
+            <input type="text" id="ca-name" placeholder="e.g. Mum, Ahmed, Sara..." />
+          </div>
+          <div class="form-group">
+            <label>What happened, and how do you feel about it?</label>
+            <textarea id="ca-side" placeholder="Be honest — Person B won't read your exact words. The AI reads both sides privately."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="toStep2()">Next: Person B's side →</button>
+        </div>
+      </div>
+      <div class="step-panel" id="cp2">
+        <div class="card">
+          <h3 style="margin-bottom:1rem;font-size:1.05rem;font-weight:800">👤 Person B — share your side</h3>
+          <div class="form-group">
+            <label>Your name</label>
+            <input type="text" id="cb-name" placeholder="e.g. Dad, Layla, Omar..." />
+          </div>
+          <div class="form-group">
+            <label>What happened, and how do you feel about it?</label>
+            <textarea id="cb-side" placeholder="Share your honest perspective. The AI will look for what you both agree on."></textarea>
+          </div>
+          <div class="row">
+            <button class="btn btn-secondary" onclick="toStep(1)">← Back</button>
+            <button class="btn btn-primary" id="conflict-btn" onclick="submitConflict()">Find common ground 🕊️</button>
+          </div>
+        </div>
+      </div>
+      <div class="step-panel" id="cp3">
+        <div class="result-box">
+          <h3>🕊️ AI Mediation Result</h3>
+          <div class="result-text" id="conflict-result"></div>
+        </div>
+        <button class="btn btn-secondary" style="margin-top:.9rem" onclick="resetConflict()">Start a new mediation</button>
+      </div>
+    </div>
+
+    <!-- ELDER -->
+    <div id="page-elder" class="page">
+      <div class="page-header">
+        <h1>Elder Companion 💬</h1>
+        <p>A warm, patient AI friend for grandparents. Always ready to listen, chat, and share a story.</p>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-header">
+          <span style="font-size:1.4rem">🤗</span>
+          <div>
+            <div style="font-weight:700;font-size:.93rem">HomeHeart Companion</div>
+            <div class="status">● Always here for you</div>
+          </div>
+          <button class="btn btn-secondary" style="margin-left:auto;font-size:.8rem;padding:.38rem .8rem" onclick="genUpdate(this)">📨 Family summary</button>
+        </div>
+        <div class="chat-messages" id="elder-chat">
+          <div class="chat-msg ai">
+            <div class="avatar">🤗</div>
+            <div class="bubble">Hello! It's so wonderful to hear from you today. I'm here and happy to chat about anything — your day, your memories, or just to have a lovely conversation. How are you feeling?</div>
+          </div>
+        </div>
+        <div class="chat-footer">
+          <input class="chat-input" type="text" id="elder-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()" />
+          <button class="btn btn-sage" id="elder-send" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+      <div class="ai-box" id="update-box" style="margin-top:1rem">
+        <div class="ai-box-header">📨 Family summary (share this with your family):</div>
+        <div id="update-text" style="white-space:pre-wrap;line-height:1.7"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <div id="bot-nav">
+    <div class="bot-nav-inner">
+      <button class="bot-btn active" id="bn-home" onclick="go('home')"><span class="bot-icon">🏡</span>Home</button>
+      <button class="bot-btn" id="bn-mood" onclick="go('mood')"><span class="bot-icon">💛</span>Mood</button>
+      <button class="bot-btn" id="bn-conflict" onclick="go('conflict')"><span class="bot-icon">🕊️</span>Peace</button>
+      <button class="bot-btn" id="bn-elder" onclick="go('elder')"><span class="bot-icon">💬</span>Elder</button>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<script>
+// ── STATE
+const S = {
+  key: 'PASTE_YOUR_GROQ_KEY_HERE',
+  moodEntries: [],
+  conflictsResolved: 0,
+  elderCount: 0,
+  elderHistory: [],
+  chosenMood: null
+};
+
+
+// ── NAVIGATION
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bot-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const ni=document.getElementById('nav-'+page); if(ni) ni.classList.add('active');
+  const bi=document.getElementById('bn-'+page); if(bi) bi.classList.add('active');
+  refreshStats();
+}
+function refreshStats(){
+  document.getElementById('s-mood').textContent=S.moodEntries.length;
+  document.getElementById('s-conflict').textContent=S.conflictsResolved;
+  document.getElementById('s-elder').textContent=S.elderCount;
+}
+
+// ── GROQ API
+async function gemini(msgs, sys=''){
+  const messages = [];
+  msgs.forEach(m => messages.push({role: m.r === 'model' ? 'assistant' : 'user', content: m.t}));
+  const body = {
+    model: 'llama3-8b-8192',
+    messages: sys ? [{role:'system', content:sys}, ...messages] : messages,
+    temperature: 0.8,
+    max_tokens: 900
+  };
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${S.key}`},
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error.');}
+  const d = await res.json();
+  return d.choices[0].message.content;
+}
+
+// ── MOOD TOOL
+function pickMood(btn){
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  S.chosenMood={score:btn.dataset.score, emoji:btn.dataset.emoji};
+}
+async function submitMood(){
+  const name=document.getElementById('mood-name').value.trim();
+  const thoughts=document.getElementById('mood-thoughts').value.trim();
+  if(!name){alert('Please enter your name.');return;}
+  if(!S.chosenMood){alert('Please pick a mood emoji.');return;}
+  const btn=document.getElementById('mood-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Checking in...';
+  try{
+    const labels={'1':'struggling','2':'not great','3':'okay','4':'good','5':'amazing'};
+    const sys=`You are HomeHeart AI, a warm and empathetic family wellbeing companion. 
+Respond to mood check-ins with genuine kindness and short encouragement (2-4 sentences). 
+Be like a caring friend, never clinical. If mood is 1 and thoughts are very distressing, gently suggest talking to a trusted family member.
+This response is private — only the person checking in sees it.`;
+    const prompt=`${name} is feeling ${labels[S.chosenMood.score]} today (${S.chosenMood.emoji}).${thoughts?` They shared privately: "${thoughts}"`:' They chose not to share further details.'} Please respond warmly.`;
+    const reply=await gemini([{r:'user',t:prompt}],sys);
+    document.getElementById('mood-ai-text').textContent=reply;
+    document.getElementById('mood-ai').classList.add('show');
+    S.moodEntries.push({name,emoji:S.chosenMood.emoji});
+    renderMoodBoard();
+    document.getElementById('mood-name').value='';
+    document.getElementById('mood-thoughts').value='';
+    document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+    S.chosenMood=null;
+  }catch(e){alert('Error: '+e.message);}
+  btn.disabled=false; btn.innerHTML='Check In';
+}
+function renderMoodBoard(){
+  const b=document.getElementById('mood-board');
+  if(!S.moodEntries.length){
+    b.innerHTML='<div class="empty-state"><div class="empty-icon">🌅</div><p>No check-ins yet. Be the first!</p></div>';
+    return;
+  }
+  b.innerHTML=S.moodEntries.map(e=>`<div class="mood-chip"><span style="font-size:1.25rem">${e.emoji}</span><span>${esc(e.name)}</span></div>`).join('');
+}
+
+// ── CONFLICT TOOL
+function toStep(n){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cp'+n).classList.add('active');
+  [1,2,3].forEach(i=>{
+    const d=document.getElementById('sd'+i);
+    d.className='step-dot'+(i<n?' done':i===n?' active':'');
+  });
+}
+function toStep2(){
+  if(!document.getElementById('ca-name').value.trim()){alert('Please enter Person A\'s name.');return;}
+  if(!document.getElementById('ca-side').value.trim()){alert('Please share Person A\'s side.');return;}
+  toStep(2);
+}
+async function submitConflict(){
+  const naA=document.getElementById('ca-name').value.trim();
+  const siA=document.getElementById('ca-side').value.trim();
+  const naB=document.getElementById('cb-name').value.trim();
+  const siB=document.getElementById('cb-side').value.trim();
+  if(!naB){alert("Please enter Person B's name.");return;}
+  if(!siB){alert("Please share Person B's side.");return;}
+  const btn=document.getElementById('conflict-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Finding common ground...';
+  try{
+    const sys=`You are HomeHeart AI, a compassionate and strictly neutral family mediator.
+Read both sides of a family disagreement and:
+1. Under "Acknowledging both of you:" — validate each person's feelings in 2 sentences each.
+2. Under "What you both actually want:" — identify shared goals or values.
+3. Under "A fair way forward:" — suggest 2-3 clear, practical steps.
+Be warm, balanced. Never blame anyone. Use simple language suitable for all ages.`;
+    const prompt=`Family disagreement between ${naA} and ${naB}.\n\n${naA}'s side: "${siA}"\n\n${naB}'s side: "${siB}"\n\nPlease mediate and help them find common ground.`;
+    const result=await gemini([{r:'user',t:prompt}],sys);
+    document.getElementById('conflict-result').textContent=result;
+    toStep(3);
+    S.conflictsResolved++;
+    refreshStats();
+  }catch(e){alert('Error: '+e.message);}
+  btn.disabled=false; btn.innerHTML='Find common ground 🕊️';
+}
+function resetConflict(){
+  ['ca-name','ca-side','cb-name','cb-side'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('conflict-result').textContent='';
+  toStep(1);
+}
+
+// ── ELDER COMPANION
+const ELDER_SYS=`You are a warm, patient, and caring AI companion for elderly family members.
+Your personality: gentle, genuinely interested, never in a rush, always encouraging.
+Keep responses conversational (2-5 sentences). Ask a natural follow-up question when appropriate.
+Great topics: memories, family stories, daily life, hobbies, light humor, cooking, life wisdom.
+Never give medical advice. If someone seems very distressed, gently suggest talking to a family member.
+Speak simply and clearly, avoid technical words or slang.`;
+
+async function sendChat(){
+  const inp=document.getElementById('elder-input');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  inp.value='';
+  addBubble('user',txt);
+  S.elderHistory.push({r:'user',t:txt});
+  const tid='t'+Date.now();
+  const chat=document.getElementById('elder-chat');
+  chat.innerHTML+=`<div class="chat-msg ai" id="${tid}"><div class="avatar">🤗</div><div class="bubble" style="color:var(--text2);font-style:italic">Typing...</div></div>`;
+  chat.scrollTop=chat.scrollHeight;
+  const btn=document.getElementById('elder-send');
+  btn.disabled=true;
+  try{
+    // Keep last 20 exchanges to avoid token overflow
+    const hist=S.elderHistory.slice(-20);
+    const reply=await gemini(hist,ELDER_SYS);
+    document.getElementById(tid)?.remove();
+    addBubble('ai',reply);
+    S.elderHistory.push({r:'model',t:reply});
+    S.elderCount++;
+    refreshStats();
+  }catch(e){
+    document.getElementById(tid)?.remove();
+    addBubble('ai','😔 Sorry, I had a little trouble responding. Please try again!');
+  }
+  btn.disabled=false;
+}
+function addBubble(role,text){
+  const chat=document.getElementById('elder-chat');
+  const av=role==='ai'?'🤗':'👤';
+  chat.innerHTML+=`<div class="chat-msg ${role}"><div class="avatar">${av}</div><div class="bubble">${esc(text)}</div></div>`;
+  chat.scrollTop=chat.scrollHeight;
+}
+async function genUpdate(btn){
+  if(S.elderHistory.length<2){alert('Have a chat first — then I can write a family summary!');return;}
+  const orig=btn.textContent; btn.textContent='⏳ Writing...'; btn.disabled=true;
+  try{
+    const convo=S.elderHistory.map(m=>(m.r==='user'?'Grandparent':'Companion')+': '+m.t).join('\n');
+    const summary=await gemini([{r:'user',t:`Based on this conversation, write a warm 3-5 sentence family update that could be shared with family members. Mention what was discussed, how the person seemed, and anything notable.\n\nConversation:\n${convo}`}],
+      'You write warm, caring family wellbeing summaries about elderly relatives based on their AI companion conversations. Be positive and reassuring.');
+    document.getElementById('update-text').textContent=summary;
+    document.getElementById('update-box').classList.add('show');
+  }catch(e){alert('Error: '+e.message);}
+  btn.textContent=orig; btn.disabled=false;
+}
+
+// ── UTILS
+function esc(t){
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+</script>
+</body>
+</html>
